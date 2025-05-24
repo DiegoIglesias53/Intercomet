@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tareas | Intercomet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" type="text/css" href="css/misiones.css">
+</head>
+<body>
+    <div class="contenido_principal">
+        <div class="panel_izquierdo">
+            <h1 class="titulo_principal">CARGA TU MISIONES AQUI!</h1>
+            <span class="notificacion_estrella">RECUERDA, CONSEGUIRAS UN LOGRO POR CADA TAREA QUE COMPLETES!</span>
+            <div class="notificacion_estrella_secundaria">
+                <i class="bi-star-fill"></i>
+            </div>
+        </div>
+
+        <div class="panel_derecho">
+            <div class="caja_subida">
+                <div class="contenedor_principal">
+                    <section class="contenedor_tareas">
+                        <h2>&lt;Lista de Misiones&gt;</h2>
+                        <div class="formulario_tarea">
+                            <label for="nueva_tarea">Nueva Tarea:</label>
+                            <input type="text" id="nueva_tarea" placeholder="Escribe aquí tu tarea" />
+                            <button type="button" id="boton_agregar_tarea">Agregar Tarea</button>
+                        </div>
+
+                        <ul class="lista_tareas">
+                           
+                            <!--Aqui irian todas las tareas-->
+
+                        </ul>
+                    </section>
+
+                    <div class="contenedor_botones">
+                        <button onclick="window.location.href='index.html'">&lt; Regresar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="pie_pagina">
+        <p></p>
+    </div>
+    <script src="misiones.js"></script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil | Intercomet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" integrity="sha384-tViUnnbYAV00FLIhhi3v/dWt3Jxw4gZQcNoSCxCIFNJVCx7/D55/wXsrNIRANwdD" crossorigin="anonymous">
+    <style>
+       body {
+            background: url('./css/Fondo.png');
+            background-size: 100%;
+            font-family: 'Press Start 2P', cursive;
+            color: white;
+            text-align: center;
+        }
+        .perfil {
+            margin-top: 50px;
+        }
+        .perfil i {
+            font-size: 80px;
+        }
+        .logros {
+            background: linear-gradient(rgba(42, 107, 129, 0.9), rgba(17, 40, 136, 0.9));
+            box-shadow: 0px 0px 10px #000000;
+            padding: 20px;
+            border-radius: 15px;
+            display: inline-block;
+            margin-top: 20px;
+            width: 50%;
+            max-height: 40rem;
+            overflow-y: auto;
+            position: relative;
+        }
+        .trofeos {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            padding: 20px;
+        }
+        .trofeo {
+            padding: 10px;
+            border-radius: 5px;
+            min-width: 120px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 1rem;
+            opacity: 0.2;
+        }
+        .trofeo.desbloqueado {
+            opacity: 1;
+            transition: opacity 0.3s ease-in;
+        }
+        .trofeo i {
+            color: #deff98;
+            text-shadow: 0 0 2rem #7cdb4a;
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+        .trofeo:hover{
+            transition: transform 0.2s;
+            transform: scale(1.1);
+        }
+        .boton-container {
+            display: flex;
+            justify-content: center;
+            padding: 10px 0;
+        }
+        .boton {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .inicio_pie_pagina {
+            z-index: -1;
+            background: linear-gradient(to right, #9DD97F, #1976BC);
+            width: 100%;
+            position: absolute;
+            bottom: 0px;
+            height: 5%;
+        }
+    </style>
+</head>
+<body>
+   <div class="perfil">
+        <i class="bi bi-person-circle"></i>
+        <h2 id="nombre_usuario">[USUARIO]</h2>
+    </div>
+    
+    <div class="logros">
+        <h3>&lt;TROFEOS&gt;</h3>
+        <div class="trofeos">
+           <div class="trofeo" data-logro="1"><i class='bi bi-trophy-fill'></i> Campeón</div>
+            <div class="trofeo" data-logro="2"><i class='bi bi-trophy-fill'></i> Explorador</div>
+            <div class="trofeo" data-logro="3"><i class='bi bi-trophy-fill'></i> Maestro</div>
+            <div class="trofeo" data-logro="4"><i class='bi bi-trophy-fill'></i> Viajero</div>
+            <div class="trofeo" data-logro="5"><i class='bi bi-trophy-fill'></i> Conquistador</div>
+            <div class="trofeo" data-logro="6"><i class='bi bi-trophy-fill'></i> Estratega</div>
+            <div class="trofeo" data-logro="7"><i class='bi bi-trophy-fill'></i> Inventor</div>
+            <div class="trofeo" data-logro="8"><i class='bi bi-trophy-fill'></i> Genio</div>
+            <div class="trofeo" data-logro="9"><i class='bi bi-trophy-fill'></i> Líder</div>
+            <div class="trofeo" data-logro="10"><i class='bi bi-trophy-fill'></i> Héroe</div>
+            <div class="trofeo" data-logro="11"><i class='bi bi-trophy-fill'></i> Misterioso</div>
+            <div class="trofeo" data-logro="12"><i class='bi bi-trophy-fill'></i> Leyenda</div>
+        </div>
+        
+    </div>
+    <div class="boton-container">
+        <a href="#" class="boton" onclick="window.location.href='index.html'">&lt;REGRESAR</a>
+    </div>
+    <div class="inicio_pie_pagina">
+        <p></p>
+    </div>
+    <script src="perfil.js"></script>
+</body>
+</html>

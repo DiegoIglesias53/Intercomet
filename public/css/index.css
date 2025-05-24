@@ -1,0 +1,147 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+body {
+    background-image: url("Fondo.png");
+    background-size: 100%;
+    background-color: #0a0a23;
+    color: #c8ff00;
+    font-family: 'Press Start 2P', sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+.inicio_contenido {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+/*========== BARRA DE BUSQUEDA ==========*/
+
+.inicio_barra_busqueda {
+    background: rgba(255, 255, 255, 0.5);
+    position: absolute;
+    top: 100px;
+    width: 40%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    border-radius: 25px;
+}
+
+.inicio_barra_busqueda input {
+    background: rgba(255, 255, 255, 0);
+    color: white;
+    font-weight: bold;
+    width: 80%;
+    padding: 10px;
+    border-radius: 25px;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    text-align: center;
+}
+
+.inicio_barra_busqueda button {
+    padding: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+}
+.inicio_barra_busqueda i {
+    color: white;
+}
+
+/*========== TITULO ==========*/
+
+.inicio_welcome {
+    font-size: 24px;
+    color: #c8ff00;
+}
+
+.inicio_titulo {
+    font-size: 36px;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    text-shadow: 0px 0px 8px #c8ff00;
+}
+
+/*========== OPCIONES ==========*/
+
+.inicio_opciones {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    margin-top: 30px;
+}
+
+.inicio_logros {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    margin-top: 30px;
+}
+
+.inicio_opcion {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.inicio_logro_ico {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.inicio_opcion:hover {
+    transform: scale(1.1);
+}
+
+.inicio_opcion i {
+    font-size: 50px;
+    width: 50px;
+    height: 50px;
+    margin-bottom: 10px;
+}
+
+.inicio_opcion p {
+    font-size: 14px;
+    color: white;
+}
+
+.inicio_logro_ico:hover {
+    transform: scale(1.1);
+}
+
+.inicio_logro_ico i {
+    color: #00ffbc;
+    text-shadow: #a9ffdf 1px 0 10px;
+    font-size: 80px;
+    width: 80px;
+    height: 80px;
+    margin-bottom: 10px;
+}
+
+.inicio_logro_ico p {
+    font-size: 14px;
+    color: white;
+}
+
+/*========== PATA DE PAGINA ==========*/
+
+.inicio_pie_pagina {
+    background: linear-gradient(to right, #9DD97F, #1976BC);
+    width: 100%;
+    position: absolute;
+    bottom: 0px;
+    height: 5%;
+}

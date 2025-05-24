@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registrate | Intercomet</title>
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="css/registrate.css">
+</head>
+<body>
+  <form id="registerForm" action="/api/auth/register" method="POST">
+  <div class="registrate">
+    <h1 class="registrate_titulo">SIGN UP WITH US!</h1>
+    <div class="registrate_avatar"><i class="bi bi-person-circle"></i></div>
+    
+      <div class="registrate_grupo_user">
+        <label for="nombre">&lt;NOMBRE&gt;</label>
+        <input type="text" id="nombre" name="nombre" required>
+      </div>
+      <div class="registrate_grupo_password">
+        <label for="contrasena">&lt;CONTRASEÑA&gt;</label>
+        <input type="password" id="contrasena" name="contrasena" required>
+      </div>
+      <div class="registrate_grupo_phone">
+        <label for="phone">&lt;PHONE NUMBER&gt;</label>
+        <input type="tel" id="telefono" name="telefono" required>
+      </div>
+      <div class="registrate_grupo_phone">
+        <label for="correo">&lt;CORREO&gt;</label>
+        <input type="email" id="correo" name="correo" required>
+      </div>
+
+      <button type="submit">&lt; SIGN UP &gt;</button>
+    
+    <p class="registrate_already">&lt;ALREADY HAVE AN ACCOUNT?&gt;</p>
+    <p class="registrate_signin" onclick="window.location.href='inicio_sesion.html'">&lt;SIGN IN HERE&gt;</p>
+  </div>
+</form>
+  <div class="inicio_pie_pagina">
+    <p></p>
+  </div>
+</body>
+</html>

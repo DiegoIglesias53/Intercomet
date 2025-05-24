@@ -1,0 +1,134 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+body {
+  background-image: url("Fondo.png");
+  background-size: 100%;
+  background-color: #0a0a23;
+  font-family: 'Press Start 2P', sans-serif;
+  color: #e6ff62;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+.registrate {
+  text-align: center;
+  background-color: #040035;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 0 12px #040035;
+  position: relative;
+}
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/*===== FORM DE CREAR CUENTA  =====*/
+
+.registrate_titulo{
+  font-size: 40px;
+  margin-bottom: 20px;
+  text-shadow: 0px 0px 10px #c8ff00;
+}
+.registrate_avatar i {
+  font-size: 150px;
+  color: #aaa;
+  margin: 20px 0;
+}
+
+/*===== LABELS E INPUTS  =====*/
+
+.registrate_grupo_user{
+  margin-top: 20px;
+}
+.registrate_grupo_user input{
+  font-family: 'Press Start 2P', sans-serif;
+  background-color: rgba(0, 0, 0, 0);
+  color: white;
+  border-bottom: 1px #fff solid;
+  margin-left: 70px;
+}
+.registrate_grupo_user label{
+  font-size: 25px;
+  text-shadow: 0px 0px 8px #a4d4ed;
+}
+.registrate_grupo_password input{
+  font-family: 'Press Start 2P', sans-serif;
+  background-color: rgba(0, 0, 0, 0);
+  color: white;
+  border-bottom: 1px #fff solid;
+  margin-left: 100px;
+}
+.registrate_grupo_password label{
+  font-size: 25px;
+  text-shadow: 0px 0px 8px #a4d4ed;
+}
+.registrate_grupo_phone input{
+  font-family: 'Press Start 2P', sans-serif;
+  background-color: rgba(0, 0, 0, 0);
+  color: white;
+  border-bottom: 1px #fff solid;
+  margin-left: 5px;
+}
+.registrate_grupo_phone label{
+  font-size: 25px;
+  text-shadow: 0px 0px 8px #a4d4ed;
+}
+label {
+  margin: 10px 0 5px;
+  color: #36b4f5;
+}
+input {
+  width: 250px;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: none;
+  border-radius: 5px;
+  outline: none;
+}
+
+/*===== BOTON  =====*/
+
+button {
+  font-family: 'Press Start 2P', sans-serif;
+  background-color: #22a1e3;
+  color: #fff;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 5px;
+  font-size: 26px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+button:hover {
+  background-color: #1e90ff;
+}
+
+/*===== TEXTOS DE ABAJO  =====*/
+
+.registrate_already {
+  margin-top: 40px;
+  color: #e6ff62;
+  font-size: 18px;
+}
+.registrate_signin {
+  color: #36b4f5;
+  font-size: 16px;
+  cursor: pointer;
+}
+.registrate_signin:hover {
+  text-decoration: underline;
+}
+
+/*========== PATA DE PAGINA ==========*/
+
+.inicio_pie_pagina {
+    background: linear-gradient(to right, #9DD97F, #1976BC);
+    width: 100%;
+    position: absolute;
+    bottom: 0px;
+    height: 5%;
+}

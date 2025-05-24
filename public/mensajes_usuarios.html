@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Chats | Intercomet</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" integrity="sha384-tViUnnbYAV00FLIhhi3v/dWt3Jxw4gZQcNoSCxCIFNJVCx7/D55/wXsrNIRANwdD" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="css/mensajes_usuarios.css">
+  <script src="/socket.io/socket.io.js"></script>
+<body>
+  <!-- El contenido del body se mantiene igual que en la versión original -->
+  <div class="combined-container">
+    <!-- Sección de Chat -->
+    <div class="chat-section">
+      <div class="chat-container">
+        <div class="sidebar">
+          <h2><i class="bi bi-star-fill"></i> Chat Privado <i class="bi bi-star-fill"></i></h2>
+          <div class="search">
+            <label class="select_enviar">Enviar a:
+              <select id="toUser" class="enviar_a"></select>
+            </label>
+          </div>
+
+          <div class="user-list">
+            <button id="startChat" class="user">Cargar Chat</button>
+          </div>
+        </div>
+        <div class="chat-area">
+          <div class="chat-header">
+            CHAT PRIVADO
+            <!-- <button class="icono_llamada" onclick="window.location.href='llamada.html'">
+              <i class="bi bi-telephone-fill"></i>
+            </button> -->
+          </div>
+          <div id="msgs" style="scroll-behavior: smooth;" class="messages"></div>
+          <!-- Entrada de nuevo mensaje -->
+          <div class="message-input">
+            <input id="texto" placeholder="Escribe tu mensaje…" style="width:70%;" />
+            <button id="send">Enviar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Sección de Perfil y Logros -->
+  <div class="perfil-section">
+    <div class="perfil">
+      <i class="bi bi-person-circle"></i>
+      <h2 id="profile-username">[USUARIO]</h2>
+    </div>
+    <div class="logros">
+      <h3>&lt;TROFEOS&gt;</h3>
+      <div class="trofeos" id="profile-achievements">
+        <!-- Aquí se inyectan los logros -->
+      </div>
+    </div>
+    <div class="boton-container">
+      <a href="index.html" class="boton">&lt; REGRESAR &gt;</a>
+    </div>
+  </div>
+  </div>
+  <div class="inicio_pie_pagina"></div>
+
+  <!-- Script -->
+  <script>
+  const socket = io();
+  const userId = localStorage.getItem('usuario_id');
+  if (!userId) {
+    alert('Debes iniciar sesión primero');
+    window.location.href = '/inicio_sesion.html';
+  }
+  socket.emit('register', { userId });
+
+  let currentConv = null,
+      currentTo   = null,
+      users       = [];
+
+  // 0) Diccionario de códigos → nombres de trofeo
+  const nombresLogros = {
+    1:  "Campeón",
+    2:  "Explorador",
+    3:  "Maestro",
+    4:  "Viajero",
+    5:  "Conquistador",
+    6:  "Estratega",
+    7:  "Inventor",
+    8:  "Genio",
+    9:  "Líder",
+    10: "Héroe",
+    11: "Misterioso",
+    12: "Leyenda"
+  };
+
+  // 1) Cargar usuarios para el <select>
+  fetch('/api/users')
+    .then(r => r.json())
+    .then(data => {
+      users = data;
+      const sel = document.getElementById('toUser');
+      sel.innerHTML = '';
+      users.forEach(u => {
+        if (u._id !== userId) {
+          const opt = document.createElement('option');
+          opt.value = u._id;
+          opt.textContent = u.nombre;
+          sel.appendChild(opt);
+        }
+      });
+    });
+
+  // 2) Iniciar chat, cargar historial y logros
+  document.getElementById('startChat').onclick = () => {
+    const to = document.getElementById('toUser').value;
+    if (!to) return;
+    currentTo = to;
+
+    // Mostrar nombre en perfil
+    const usuarioDestino = users.find(u => u._id === to);
+    document.getElementById('profile-username').textContent =
+      usuarioDestino?.nombre || '[Usuario]';
+
+    // Crear/recuperar conversación
+    fetch('/api/conversations', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user1: userId, user2: to })
+    })
+    .then(r => r.json())
+    .then(({ convId }) => {
+      currentConv = convId;
+      return fetch(`/api/conversations/${convId}/messages`);
+    })
+    .then(r => r.json())
+    .then(msgs => {
+      // Renderizar historial
+      const box = document.getElementById('msgs');
+      box.innerHTML = '';
+      msgs.forEach(m => {
+        const div = document.createElement('div');
+        div.innerHTML = `<strong>${m.from}:</strong> ${m.text}`;
+        box.appendChild(div);
+      });
+      box.scrollTop = box.scrollHeight;
+      // Ahora cargar logros
+      return fetch(`/api/logros/user/${currentTo}`);
+    })
+    .then(r => r.json())
+    .then(logros => {
+      const cont = document.getElementById('profile-achievements');
+      cont.innerHTML = '';
+      if (logros.length === 0) {
+        cont.textContent = 'Este usuario no tiene trofeos aún.';
+      } else {
+        logros.forEach(l => {
+          // Usar el diccionario: si no existe, usar l.nombre
+          const etiqueta = nombresLogros[l.codigo] || l.nombre || `#${l.codigo}`;
+          const d = document.createElement('div');
+          d.className = 'trofeo';
+          d.innerHTML = `<i class="bi bi-trophy-fill"></i> ${etiqueta}`;
+          if (!l.desbloqueado) d.style.opacity = '0.5';
+          cont.appendChild(d);
+        });
+      }
+    })
+    .catch(console.error);
+  };
+
+  // 3) Enviar mensaje
+  document.getElementById('send').onclick = () => {
+    const text = document.getElementById('texto').value.trim();
+    if (!text || !currentConv) return;
+    socket.emit('private message', {
+      from:            userId,
+      to:              currentTo,
+      text,
+      conversationId:  currentConv
+    });
+    document.getElementById('texto').value = '';
+  };
+
+  // 4) Recibir en tiempo real
+  socket.on('private message', ({ from, text }) => {
+    const box = document.getElementById('msgs');
+    const div = document.createElement('div');
+    div.innerHTML = `<strong>${from}:</strong> ${text}`;
+    box.appendChild(div);
+    box.scrollTop = box.scrollHeight;
+  });
+</script>
+
+  
+</body>
+</html>

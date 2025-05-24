@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Chats | Intercomet</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" integrity="sha384-tViUnnbYAV00FLIhhi3v/dWt3Jxw4gZQcNoSCxCIFNJVCx7/D55/wXsrNIRANwdD" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="css/mensajes_grupos.css">
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+
+<body>
+  <!-- Verificar sesión -->
+  <script>
+    const currentUserId = localStorage.getItem('usuario_id');
+    if (!currentUserId) {
+      alert('No has iniciado sesión');
+      window.location.href = '/inicio_sesion.html';
+    }
+  </script>
+
+  <div class="combined-container">
+    <!-- Sidebar y creación de grupos -->
+    <div class="chat-section">
+      <div class="chat-container">
+        <div class="sidebar">
+          <h2><i class="bi bi-star-fill"></i> Usuario: <span id="user-name">Cargando...</span> <i class="bi bi-star-fill"></i></h2>
+          
+          <h4 class="crear_grupo">Crear Grupo</h4>
+          <input id="group-name" placeholder="Nombre del grupo">
+          <div id="user-list"></div>  
+          <button id="create-grp">Crear Grupo</button>
+          
+          <h4 class="tus_chats">Tus Chats</h4>
+          <div id="convs"></div>
+        </div>
+
+        <!-- Área de chat -->
+        <div class="chat-area">
+          <div class="chat-header">
+            <h4>Chat: <span id="conv-title"></span></h4>
+          </div>
+          <section class="messages">
+            <div id="messages-section"></div>
+            <div id="msgs" class="chat-box"></div>
+            <div class="message-input">
+              <input id="msg-text" placeholder="Mensaje">
+              <button id="send-btn">Enviar</button>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <!-- Perfil de grupo -->
+    <div class="perfil-section">
+      <div class="perfil text-center mb-3">
+        <i class="bi bi-people-fill display-4"></i>
+        <!-- Aquí mostramos el nombre del grupo -->
+        <h2 id="group-name-header">[NOMBRE DEL GRUPO]</h2>
+      </div>
+      <div class="logros mb-3">
+        <h3>&lt;INTEGRANTES&gt;</h3>
+        <div class="trofeos" id="group-members">
+          <!-- Aquí se inyectan los miembros -->
+        </div>
+      </div>
+      <div class="boton-container text-center">
+        <a href="index.html" class="boton">&lt; REGRESAR &gt;</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="inicio_pie_pagina"></div>
+
+  <!-- SCRIPT UNIFICADO -->
+  <script>
+    const socket = io();
+    let users = [], convId;
+
+    // 1) Mostrar nombre de usuario actual
+    fetch(`/api/usuarios/${currentUserId}`)
+      .then(r => r.json())
+      .then(u => {
+        document.getElementById('user-name').innerText = u.nombre;
+      });
+
+    // 2) Cargar listado de usuarios para crear grupo
+    fetch('/api/users')
+      .then(r => r.json())
+      .then(data => {
+        users = data.filter(u => u._id !== currentUserId);
+        document.getElementById('user-list').innerHTML = users
+          .map(u => `<label><input type="checkbox" value="${u._id}"> ${u.nombre}</label>`)
+          .join('');
+        loadConvs();
+      });
+
+    // 3) Crear grupo
+    document.getElementById('create-grp').onclick = async () => {
+      const nombre = document.getElementById('group-name').value.trim();
+      const participantes = Array.from(
+        document.querySelectorAll('#user-list input:checked')
+      ).map(i => i.value);
+      participantes.push(currentUserId);
+      if (participantes.length < 3) {
+        return alert('Selecciona al menos dos usuarios para el grupo');
+      }
+      await fetch('/api/conversations/group', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ participantes, creadoPor: currentUserId, nombre })
+      });
+      document.getElementById('group-name').value = '';
+      document.querySelectorAll('#user-list input').forEach(i => i.checked = false);
+      loadConvs();
+    };
+
+    // 4) Listar solo conversaciones GRUPALES
+async function loadConvs() {
+  // Obtiene todas las conversaciones del usuario
+  const convs = await (await fetch(`/api/conversations/user/${currentUserId}`)).json();
+  // Filtra solo las de tipo 'grupal'
+  const groupConvs = convs.filter(c => c.tipo === 'grupal');
+
+  // Mapea únicamente los grupos
+  document.getElementById('convs').innerHTML = groupConvs
+    .map(c => {
+      const title = c.nombre || 'Sin nombre';
+      return `<div class="conv p-2 border mb-2" data-id="${c._id}">${title}</div>`;
+    })
+    .join('');
+
+  // Asigna evento click para abrir cada grupo
+  document.querySelectorAll('.conv').forEach(el =>
+    el.onclick = () => openConv(el.dataset.id)
+  );
+}
+
+    // 5) Abrir conversación
+    async function openConv(id) {
+      convId = id;
+      socket.emit('joinRoom', convId);
+
+      // 5.1) Mostrar título de chat
+      const title = document.querySelector(`.conv[data-id="${convId}"]`).innerText;
+      document.getElementById('conv-title').innerText = title;
+
+      // 5.2) Mostrar nombre del grupo
+      document.getElementById('group-name-header').innerText = title;
+
+      // 5.3) Cargar integrantes
+      const convs = await (await fetch(`/api/conversations/user/${currentUserId}`)).json();
+      const conv = convs.find(c => c._id === convId);
+      if (conv) {
+        const members = users
+          .filter(u => conv.participantes.includes(u._id))
+          .map(u => u.nombre);
+        document.getElementById('group-members').innerHTML = members
+          .map(name => `<div class="trofeo mb-1"><i class="bi bi-person-circle"></i> ${name}</div>`)
+          .join('');
+      }
+
+      // 5.4) Mostrar sección de mensajes y cargar historial
+      document.getElementById('messages-section').style.display = 'block';
+      loadMsgs();
+    }
+
+    // 6) Cargar historial de mensajes
+    async function loadMsgs() {
+      const msgs = await (await fetch(`/api/conversations/${convId}/messages`)).json();
+      const box = document.getElementById('msgs');
+      box.innerHTML = msgs
+        .map(m => `<div class="message mb-1"><strong>${m.from}:</strong> ${m.text}</div>`)
+        .join('');
+      box.scrollTop = box.scrollHeight;
+    }
+
+    // 7) Enviar mensaje grupal
+    document.getElementById('send-btn').onclick = () => {
+      const text = document.getElementById('msg-text').value.trim();
+      if (!text) return;
+      socket.emit('group message', { conversationId: convId, from: currentUserId, text });
+      document.getElementById('msg-text').value = '';
+    };
+
+    // 8) Recibir mensajes en tiempo real
+    socket.on('group message', m => {
+      const box = document.getElementById('msgs');
+      const div = document.createElement('div');
+      div.className = 'message mb-1';
+      div.innerHTML = `<strong>${m.from}:</strong> ${m.text}`;
+      box.appendChild(div);
+      box.scrollTop = box.scrollHeight;
+    });
+  </script>
+</body>
+</html>

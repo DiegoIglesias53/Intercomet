@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iniciar Sesion | Intercomet</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="css/inicio_sesion.css">
+</head>
+<body>
+  <div class="registrate">
+    <h1 class="registrate_titulo">WELCOME BACK!</h1>
+    <div class="registrate_avatar"><i class="bi bi-person-circle"></i></div>
+    <form id="loginForm" action="/api/auth/login" method="POST">
+      <div class="registrate_grupo_user">
+        <label for="correo">&lt;CORREO&gt;</label>
+        <input type="email" id="correo" name="correo" required>
+      </div>
+      <div class="registrate_grupo_password">
+        <label for="contrasena">&lt;CONTRASEÑA&gt;</label>
+        <input type="password" id="contrasena" name="contrasena" required>
+      </div>
+      <!-- <div class="registrate_grupo_phone">
+        <label for="phone">&lt;PHONE NUMBER&gt;</label>
+        <input type="tel" id="phone" name="phone">
+      </div> -->
+      <button type="submit">&lt; SIGN IN &gt;</button>
+    </form>
+    <p class="registrate_already">&lt;DON´T HAVE AN ACCOUNT?&gt;</p>
+    <p class="registrate_signin" onclick="window.location.href='registrate.html'">&lt;JOIN HERE&gt;</p>
+  </div>
+  <div class="inicio_pie_pagina">
+    <p></p>
+  </div>
+</body>
+</html>

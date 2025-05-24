@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Videollamada | Intercomet</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="css/llamada.css">
+  <script src="/socket.io/socket.io.js"></script>
+  <style>
+    .video-container { display:flex; gap:10px; margin-bottom:15px; }
+    .video-container video { flex:1; border:1px solid #ccc; border-radius:4px; background:#000; }
+  </style>
+</head>
+<body>
+  <div class="contenedor_videollamada container py-4">
+    
+      <div class="fila_contenido">
+        <!-- Columna videollamada -->
+        <div class="columna_video">
+          <h2>Videollamada</h2>
+          <div class="video-container">
+            <video id="localVideo" class="video_local" autoplay muted playsinline></video>
+            <video id="remoteVideo" class="video_remoto" autoplay playsinline></video>
+          </div>
+          <div class="mb-3">
+            <label>Llamar a:
+              <select id="toUser" class="form-select d-inline-block" style="width:auto;">
+                <option value="">-- selecciona --</option>
+              </select>
+            </label>
+          </div>
+          <div class="mb-3">
+            <button id="startCall" class="btn btn-outline-primary me-2">
+              <i class="bi bi-camera-video-fill"></i> Iniciar
+            </button>
+            <button id="hangUp" class="btn btn-outline-danger" disabled>
+              <i class="bi bi-telephone-fill"></i> Colgar
+            </button>
+          </div>
+        </div>
+        <!-- Columna chat o perfil -->
+        <div class="columna_chat">
+          <div class="area_chat">
+            <h5>Información</h5>
+            <p>Usuario local: <strong id="meName">Cargando...</strong></p>
+            <p>A llamar: <strong id="peerName">—</strong></p>
+
+          <div class="mt-3">
+            <button class="btn btn-secondary" onclick="history.back()">Regresar</button>
+          </div>
+          </div>
+
+        </div>
+      </div>
+    
+  </div>
+
+  <script>
+    const socket = io();
+    const currentUserId = localStorage.getItem('usuario_id');
+    if (!currentUserId) {
+      alert('Debes iniciar sesión primero');
+      window.location.href = '/inicio_sesion.html';
+    }
+    socket.emit('register', { userId: currentUserId });
+
+    let pc, localStream, remoteStream, targetUserId = null;
+    const rtcConfig = { iceServers:[{ urls:'stun:stun.l.google.com:19302' }] };
+
+    // Mostrar mi nombre
+    fetch(`/api/usuarios/${currentUserId}`)
+    .then(r=>r.json())
+    .then(u=> document.getElementById('meName').textContent = u.nombre);
+
+    // Llenar selector de usuarios
+    fetch('/api/users')
+    .then(r=>r.json())
+    .then(users=>{
+      const sel = document.getElementById('toUser');
+      users.filter(u=>u._id!==currentUserId).forEach(u=>{
+        sel.add(new Option(u.nombre, u._id));
+      });
+    });
+
+    // Al cambiar selección
+    document.getElementById('toUser').onchange = e => {
+      targetUserId = e.target.value;
+      const opt = e.target.selectedOptions[0];
+      document.getElementById('peerName').textContent = opt ? opt.text : '—';
+    };
+
+    // Inicializar cámara/mic
+    async function initLocalStream() {
+      localStream = await navigator.mediaDevices.getUserMedia({ video:true, audio:true });
+      localVideo.srcObject = localStream;
+    }
+
+    // Crear RTCPeerConnection
+    function createPeerConnection() {
+      pc = new RTCPeerConnection(rtcConfig);
+      remoteStream = new MediaStream();
+      remoteVideo.srcObject = remoteStream;
+      pc.ontrack = e => remoteStream.addTrack(e.track);
+      pc.onicecandidate = ({ candidate }) => {
+        if (candidate && targetUserId) {
+          socket.emit('webrtc-candidate', { to: targetUserId, candidate });
+        }
+      };
+      localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+    }
+
+    // Señales entrantes
+    socket.on('webrtc-offer', async ({ from, offer }) => {
+      targetUserId = from;
+      document.getElementById('peerName').textContent = from;
+      await initLocalStream();
+      createPeerConnection();
+      await pc.setRemoteDescription(offer);
+      const answer = await pc.createAnswer();
+      await pc.setLocalDescription(answer);
+      socket.emit('webrtc-answer', { to: from, answer });
+      hangUp.disabled = false;
+    });
+
+    socket.on('webrtc-answer', async ({ answer }) => {
+      await pc.setRemoteDescription(answer);
+    });
+
+    socket.on('webrtc-candidate', async ({ candidate }) => {
+      if (pc) {
+        try { await pc.addIceCandidate(candidate); }
+        catch(e){ console.error(e); }
+      }
+    });
+
+    // Botón Iniciar llamada
+    startCall.onclick = async () => {
+      if (!targetUserId) return alert('Selecciona un usuario para llamar');
+      await initLocalStream();
+      createPeerConnection();
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      socket.emit('webrtc-offer', { to: targetUserId, offer });
+      hangUp.disabled = false;
+    };
+
+    // Botón Colgar
+    hangUp.onclick = () => {
+      if (pc) pc.close();
+      pc = null;
+      hangUp.disabled = true;
+      window.location.reload();
+    };
+  </script>
+  <!-- Pie de página -->
+  <div class="pie_pagina_inicio">
+    <p></p>
+  </div>
+</body>
+</html>
