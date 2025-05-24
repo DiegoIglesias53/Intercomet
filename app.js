@@ -25,7 +25,7 @@ const server = http.createServer(app);
 const io     = socketIo(server, { cors: { origin: '*' } });
 
 // Conexión a MongoDB
-mongoose.connect('mongodb://localhost:27017/Intercomet_v1', {
+mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
